@@ -1,8 +1,4 @@
-# landlords
-斗地主
-
-闲着没事自己写个小游戏玩玩   
-erlang经验不是很多，欢迎提意见，也可以帮忙加几个模块
+# GAME CENTER
 
 编译：make     
 运行：sh start.sh  
@@ -19,6 +15,7 @@ protobuf文件：protobuf.proto
 7.lager日志框架<br>
 8.protobuffs编解码工具<br>
 
-
+业务内容: <br>
+1. im单对单聊天消息
 
 
