@@ -51,7 +51,7 @@ start_link([Port, ListenNum]) ->
 %% ===================================================================
 
 init([Port, ListenNum]) ->
-	{ok, Redis} = application:get_env(landlords, redis),
+	{ok, Redis} = application:get_env(game_center, redis),
 	PoolSpecs =
 		lists:map(
 			fun({Name, PoolArgs, WorkerArgs}) ->
