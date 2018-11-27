@@ -106,6 +106,22 @@ wait_for_auth(stop, StateData) ->
 	{stop, normal, StateData}.
 
 
+handle_event(Event, StateName, StateData) ->
+	?WARNING("undefined event : ~p~n", [Event]),
+	fsm_next_state(StateName, StateData).
+
+handle_sync_event(_Event, _From, StateName, StateData) ->
+	fsm_reply(ok, StateName, StateData).
+
+handle_info({fsm_next_state, NewStateName}, _StateName, StateData) ->
+	?DEBUG("fsm_next_state~n",[]),
+	fsm_next_state(NewStateName, StateData);
+handle_info(Event, StateName, StateData) ->
+	?WARNING("undefined event : ~p~n", [Event]),
+	fsm_next_state(StateName, StateData).
+
+
+
 terminate(Reason, _StateName, StateData) ->
 	#auth_state{
 		uid = Uid,
@@ -137,6 +153,11 @@ fsm_next_state(wait_for_auth, #auth_state{retry_times = TetryTimes} = StateData)
 fsm_next_state(StateName, StateData) ->
 	{next_state, StateName, StateData, ?AUTH_TIMEOUT}.
 
+
+%% fsm_reply: Generate the reply FSM tuple with different timeout,
+%% depending on the future state
+fsm_reply(Reply, StateName, StateData) ->
+	{reply, Reply, StateName, StateData, ?AUTH_TIMEOUT}.
 
 
 
