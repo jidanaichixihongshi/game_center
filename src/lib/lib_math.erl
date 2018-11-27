@@ -23,24 +23,45 @@
 %%% @doc
 %%%
 %%% @end
-%%% Created : 26. 十一月 2018 下午 14:23
+%%% Created : 26. 六月 2018 13:34
 %%%-------------------------------------------------------------------
 
--define(CONFIG_FILE_DIR, "config/sys.config").                %% 配置文件
+-module(lib_math).
+-auth("cw").
+
+-compile(export_all).
+
+%% 向上取整
+get_ceil(X) ->
+	T = trunc(X),
+	if
+		X - T == 0 -> T;
+		true ->
+			if
+				X > 0 -> T + 1;
+				true -> T
+			end
+	end.
+
+%% 向下取整
+floor(X) ->
+	T = trunc(X),
+	if
+		X - T == 0 -> T;
+		true ->
+			if
+				X > 0 -> T;
+				true -> T-1
+			end
+	end.
 
 
--define(HIBERNATE_TIMEOUT, 90000).                            %% 心跳
 
 
-%% ETS表配置
--define(PUBLIC_STORAGE_ETS, public_storage_ets).              %% 公共临时存储ETS
+%% -----------------------------------------------------------------------------
+%% internal function
+%% -----------------------------------------------------------------------------
 
--define(ETS_READ_CONCURRENCY, {read_concurrency, true}).      %% 并发读
--define(ETS_WRITE_CONCURRENCY, {write_concurrency, true}).    %% 并发写
-
--define(ETS_LIST, [
-	{public_storage_ets, [set, public, named_table, ?ETS_READ_CONCURRENCY, ?ETS_WRITE_CONCURRENCY]}
-]).
 
 
 

@@ -1,3 +1,31 @@
+%%%-------------------------------------------------------------------
+%%% * ━━━━━━神兽出没━━━━━━
+%%% * 　　　┏┓　　　┏┓
+%%% * 　　┏┛┻━━━┛┻┓
+%%% * 　　┃　　　　　　　┃
+%%% * 　　┃　　　━　　　┃
+%%% * 　　┃　┳┛　┗┳　┃
+%%% * 　　┃　　　　　　　┃
+%%% * 　　┃　　　┻　　　┃
+%%% * 　　┃　　　　　　　┃
+%%% * 　　┗━┓　　　┏━┛
+%%% * 　　　　┃　　　┃ 神兽保佑
+%%% * 　　　　┃　　　┃ 代码无bug　　
+%%% * 　　　　┃　　　┗━━━┓
+%%% * 　　　　┃　　　　　　　┣┓
+%%% * 　　　　┃　　　　　　　┏┛
+%%% * 　　　　┗┓┓┏━┳┓┏┛
+%%% * 　　　　　┃┫┫　┃┫┫
+%%% * 　　　　　┗┻┛　┗┻┛
+%%% * ━━━━━━感觉萌萌哒━━━━━━
+%%% @author Administrator
+%%% @copyright (C) 2018, <COMPANY>
+%%% @doc
+%%%
+%%% @end
+%%% Created : 26. 十一月 2018 下午 15:13
+%%%-------------------------------------------------------------------
+
 -module(game_center_sup).
 
 -behaviour(supervisor).
@@ -15,13 +43,44 @@
 %% API functions
 %% ===================================================================
 
-start_link() ->
-    supervisor:start_link({local, ?MODULE}, ?MODULE, []).
+start_link([Port, ListenNum]) ->
+	supervisor:start_link({local, ?MODULE}, ?MODULE, [Port, ListenNum]).
 
 %% ===================================================================
 %% Supervisor callbacks
 %% ===================================================================
 
-init([]) ->
-    {ok, { {one_for_one, 5, 10}, []} }.
+init([Port, ListenNum]) ->
+	{ok, Redis} = application:get_env(landlords, redis),
+	PoolSpecs =
+		lists:map(
+			fun({Name, PoolArgs, WorkerArgs}) ->
+				poolboy:child_spec(Name, PoolArgs, WorkerArgs)
+			end, Redis),
+
+	{ok, {{one_for_one, 5, 10}, [
+		ranch:child_spec(game_center_receiver, ListenNum, ranch_tcp, [{port, Port}], game_center_receiver, []),
+		?CHILD(mod_system_monitor, worker),
+		?CHILD(mod_reloader, worker)
+	] ++ PoolSpecs}}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -23,24 +23,55 @@
 %%% @doc
 %%%
 %%% @end
-%%% Created : 26. 十一月 2018 下午 14:23
+%%% Created : 26. 十一月 2018 下午 16:30
 %%%-------------------------------------------------------------------
+-module(game_center).
+-author("cw").
 
--define(CONFIG_FILE_DIR, "config/sys.config").                %% 配置文件
+%% API
+-export([
+	start/0,
+	stop/0]).
 
+start() ->
+	Apps = [
+		compiler,
+		syntax_tools,
+		goldrush,
+		lager,
+		crypto,
+		asn1,
+		public_key,
+		ssl,
+		ranch,
+		protobuffs,
+		eredis,
+		cowlib,
+		cowboy,
+		game_center],
+	start_app(Apps, permanent).
 
--define(HIBERNATE_TIMEOUT, 90000).                            %% 心跳
+stop() ->
+	io_lib:format("============ stop game center ============~n",[]).
 
+start_app([], _Type) ->
+	ok;
+start_app([App | Apps], Type) ->
+	case application:start(App, Type) of
+		ok ->
+			start_app(Apps, Type);
+		{error, {already_started, _}} ->
+			start_app(Apps, Type);
+		{error, {not_started, NoApp}} ->
+			Reason = io_lib:format("******** failed to start application '~p' ********~n", [NoApp]),
+			exit_or_halt(Reason);
+		{error, Reason} ->
+			exit_or_halt(Reason)
+	end.
 
-%% ETS表配置
--define(PUBLIC_STORAGE_ETS, public_storage_ets).              %% 公共临时存储ETS
+exit_or_halt(Reason) ->
+	halt(string:substr(lists:flatten(Reason), 1, 199)).
 
--define(ETS_READ_CONCURRENCY, {read_concurrency, true}).      %% 并发读
--define(ETS_WRITE_CONCURRENCY, {write_concurrency, true}).    %% 并发写
-
--define(ETS_LIST, [
-	{public_storage_ets, [set, public, named_table, ?ETS_READ_CONCURRENCY, ?ETS_WRITE_CONCURRENCY]}
-]).
 
 
 

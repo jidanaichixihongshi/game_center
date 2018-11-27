@@ -23,24 +23,51 @@
 %%% @doc
 %%%
 %%% @end
-%%% Created : 26. 十一月 2018 下午 14:23
+%%% Created : 29. 六月 2018 14:25
 %%%-------------------------------------------------------------------
 
--define(CONFIG_FILE_DIR, "config/sys.config").                %% 配置文件
+-module(lib_random).
+-auth("cw").
+
+-compile(export_all).
+
+%% 随机返回两个数之间的一个数
+-spec random(Min :: integer(), Max :: integer()) -> integer().
+random(Min, Max) ->
+	Min2 = Min - 1,
+	rand:uniform(Max - Min2) + Min2.
+
+%% 从一个list中随机选择一个元素
+-spec select([term()]) -> term().
+select(List) ->
+	RandId = rand:uniform(length(List)),
+	lists:nth(RandId, List).
+
+%% 哈希值计算
+get_hash(Term, Range) ->
+	erlang:phash(Term, Range).
 
 
--define(HIBERNATE_TIMEOUT, 90000).                            %% 心跳
+%% 从一个list中随机选择n个元素
+-spec select_n(non_neg_integer(), [term()]) -> [term()].
+select_n(N, Lst) ->
+	select_n(N, Lst, []).
+select_n(0, _Lst, Result) ->
+	Result;
+select_n(_, [], Result) ->
+	Result;
+select_n(N, Lst, Result) ->
+	R = select(Lst),
+	NewLst = lists:delete(R, Lst),
+	select_n(N - 1, NewLst, [R | Result]).
+
+%% -----------------------------------------------------------------------------
+%% internal function
+%% -----------------------------------------------------------------------------
 
 
-%% ETS表配置
--define(PUBLIC_STORAGE_ETS, public_storage_ets).              %% 公共临时存储ETS
 
--define(ETS_READ_CONCURRENCY, {read_concurrency, true}).      %% 并发读
--define(ETS_WRITE_CONCURRENCY, {write_concurrency, true}).    %% 并发写
 
--define(ETS_LIST, [
-	{public_storage_ets, [set, public, named_table, ?ETS_READ_CONCURRENCY, ?ETS_WRITE_CONCURRENCY]}
-]).
 
 
 
