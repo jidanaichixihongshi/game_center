@@ -67,7 +67,7 @@ init([Ref, Socket, Transport, Opts]) ->
 	ok = proc_lib:init_ack({ok, self()}),
 	ok = ranch:accept_ack(Ref),
 	ok = Transport:setopts(Socket, [{active, once}, {packet, 4}]),
-	%{ok, Pid} = landlords_c2s:start_link({ranch_tcp, Socket, self()}, []),
+	{ok, Pid} = game_center_auth:start_link({ranch_tcp, Socket, self()}, []),
 	?INFO("landlords_c2s init, socket: ~p~n", [Socket]),
 	State = #receiver_state{
 		ref = Ref,

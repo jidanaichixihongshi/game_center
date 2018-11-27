@@ -23,31 +23,39 @@
 %%% @doc
 %%%
 %%% @end
-%%% Created : 26. 十一月 2018 下午 14:23
+%%% Created : 27. 十一月 2018 下午 16:55
 %%%-------------------------------------------------------------------
+-module(mod_proc).
+-author("cw").
 
--define(CONFIG_FILE_DIR, "config/sys.config").                %% 配置文件
-
-
--define(HIBERNATE_TIMEOUT, 90000).                            %% 心跳
--define(AUTH_TIMEOUT, 6000). 																	%% 验证超时
-
-%% 用户状态
--define(STATUS_OFFLINE, 0).             %% 离线
--define(STATUS_ONLINE, 1).              %% 在线
--define(STATUS_LOGGING, 2).             %% 正在登陆
--define(STATUS_REGISTERING, 3).         %% 正在注册
-
-
-%% ETS表配置
--define(PUBLIC_STORAGE_ETS, public_storage_ets).              %% 公共临时存储ETS
-
--define(ETS_READ_CONCURRENCY, {read_concurrency, true}).      %% 并发读
--define(ETS_WRITE_CONCURRENCY, {write_concurrency, true}).    %% 并发写
-
--define(ETS_LIST, [
-	{public_storage_ets, [set, public, named_table, ?ETS_READ_CONCURRENCY, ?ETS_WRITE_CONCURRENCY]}
+%% API
+-export([
+	is_proc_alive/1
 ]).
+
+
+%% 检查进程是否存活
+is_proc_alive(Pid) when is_pid(Pid) ->
+	try
+		Node = node(Pid),
+		if
+			Node == node() ->
+				is_process_alive(Pid);
+			true ->
+				case rpc:call(Node, erlang, is_process_alive, [Pid]) of
+					{badrpc, _Reason} -> false;
+					Res -> Res
+				end
+		end
+	catch
+		_ -> false
+	end;
+is_proc_alive(_Pid) ->
+	false.
+
+
+
+
 
 
 

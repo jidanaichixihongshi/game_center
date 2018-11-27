@@ -48,7 +48,7 @@ start(_StartType, _StartArgs) ->
 	{ok, ListenNum} = application:get_env(game_center, listen_num),
 	{ok, _} = start_http_link(Http_Port),
 	{ok, Pid} = game_center_sup:start_link([Tcp_Port, ListenNum]),
-	%connect_node(CenterNode),
+	connect_node(CenterNode),
 	{ok, Pid}.
 
 stop(_State) ->

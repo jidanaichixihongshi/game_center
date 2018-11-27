@@ -10,3 +10,7 @@ erl -pa ebin deps/*/ebin\
 		-setcookie game_center \
 		-s game_center
 
+
+
+
+
