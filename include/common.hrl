@@ -4,7 +4,18 @@
 %%% @doc
 %%%
 %%% @end
-%%% Created : 26. 十一月 2018 下午 18:03
+%%% Created : 26. 十一月 2018 下午 17:51
 %%%-------------------------------------------------------------------
--define(PROTO_CONFIG, "config/protobuf.proto").
+
+-define(UID_HASH_RANGE, 10000000).      %% 和uid相关的hash值取值范围
+
+
+
+
+
+
+
+
+
+
 

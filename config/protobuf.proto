@@ -72,6 +72,13 @@ message push {
   optional string extend = 3;
 }
 
+%% 动作消息
+message action {
+  required string action = 1;
+  required string param = 2;
+  optional string extend = 3;
+}
+
 %% ==================================================================================
 
 
