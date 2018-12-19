@@ -1,4 +1,6 @@
--module(landlords_client_app).
+-module(game_center_client_app).
+
+-include("common.hrl").
 
 -behaviour(application).
 
@@ -10,7 +12,7 @@
 %% ===================================================================
 start(_StartType, _StartArgs) ->
 	create_ets(),
-	landlords_client_sup:start_link().
+	game_center_client_sup:start_link().
 
 stop(_State) ->
 	io:format("stop landlords server!~n", []),
@@ -18,7 +20,7 @@ stop(_State) ->
 
 
 create_ets() ->
-	ets:new(landlords_client, [named_table, public, set, {read_concurrency, true}, {write_concurrency, true}]).
+	ets:new(?CLIENT_PUBLIC_ETS, [named_table, public, set, {read_concurrency, true}, {write_concurrency, true}]).
 
 
 

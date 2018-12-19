@@ -1,4 +1,4 @@
--module(landlords_client).
+-module(game_center_client).
 -auth("cw").
 
 -export([
@@ -14,7 +14,7 @@ start() ->
 		public_key,
 		ssl,
 		protobuffs,
-		landlords_client],
+		game_center_client],
 	start_app(Apps, permanent).
 
 stop() ->

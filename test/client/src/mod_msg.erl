@@ -29,40 +29,67 @@
 -auth("cw").
 
 -include("common.hrl").
+-include("protobuf_pb.hrl").
 
 -export([
-	packet/1,
-	unpacket/1,
-	decode/2]).
-
--define(SIGN0, 0).          %% 节点消息
--define(SIGN1, 1).          %% c2s消息
--define(SIGN2, 2).          %% s2c消息
-
-%% 打包客户端消息
-packet(Msg) when is_tuple(Msg) ->
-	packet_msg(Msg);
-packet(Msg) ->
-	{error,Msg}.
-
-packet_msg(Msg) ->
-	EMsg = list_to_binary(protobuf_pb:encode(Msg)),
-	{ok, <<0:16, EMsg/binary>>}.
+	request_create/4,
+	mid_create/1,
+	data_create/4,
+	router_create/2]).
 
 
+-spec request_create(integer(), integer(), #router{}, binary()) -> #proto{}.
+request_create(Mt, Sig, Router, Data) when is_binary(Data) ->
+	#proto{
+		mt = Mt,
+		sig = Sig,
+		router = Router,
+		data = Data,
+		ts = lib_common:get_mstimestamp()
+	};
+request_create(Mt, Sig, Router, Data) ->
+	BinData = term_to_binary(Data),
+	request_create(Mt, Sig, Router, BinData).
 
-%% 解包服务器消息
-unpacket(Data) when is_binary(Data) ->
-	<<0:16, BinMsg/binary>> = Data,
-	protobuf_pb:decode(proto, BinMsg);
-unpacket(_Data) ->
-	error.
+%% "hash(Uid)_mstimestamp()"
+mid_create(Uid) ->
+	HashV = lib_common:get_hash(Uid, ?UID_HASH_RANGE),
+	MsTimesstamp = lib_common:get_mstimestamp(),
+	integer_to_list(HashV) ++ "_" ++ integer_to_list(MsTimesstamp).
 
-%% 解码
-decode(T, BinMsg) when is_binary(BinMsg) ->
-	protobuf_pb:decode(T, BinMsg);
-decode(_T, _Msg) ->
-	error.
+
+data_create(Dt, Mid, Child, Extend) when is_binary(Child), is_binary(Extend) ->
+	#data{
+		dt = Dt,
+		mid = Mid,
+		children = Child,
+		extend = Extend
+	};
+data_create(Dt, Mid, Child, Extend) when is_binary(Child) ->
+	BinExtend = term_to_binary(Extend),
+	data_create(Dt, Mid, Child, BinExtend);
+data_create(Dt, Mid, Child, Extend) ->
+	BinChild = term_to_binary(Child),
+	data_create(Dt, Mid, BinChild, Extend).
+
+-spec router_create(binary(), binary(), binary(), binary(), binary(), binary()) -> #router{}.
+router_create(From, FDevice, FServer, To, TDevice, TServer) ->
+	#router{
+		from = From,
+		fdevice = FDevice,
+		fserver = FServer,
+		to = To,
+		tdevice = TDevice,
+		tserver = TServer}.
+router_create(From, To) when is_binary(From), is_binary(To) ->
+	router_create(From, <<"">>, <<"">>, To, <<"">>, <<"">>);
+router_create(From, To) when is_binary(From) ->
+	BinTo = term_to_binary(To),
+	router_create(From, BinTo);
+router_create(From, To) ->
+	BinFrom = term_to_binary(From),
+	router_create(BinFrom, To).
+
 
 
 %% -----------------------------------------------------------------------------

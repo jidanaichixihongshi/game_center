@@ -1,4 +1,4 @@
--module(landlords_client_sup).
+-module(game_center_client_sup).
 
 -behaviour(supervisor).
 
@@ -16,14 +16,14 @@
 %% ===================================================================
 
 start_link() ->
-    supervisor:start_link({local, ?MODULE}, ?MODULE, []).
+	supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 %% ===================================================================
 %% Supervisor callbacks
 %% ===================================================================
 
 init([]) ->
-    {ok, { {one_for_one, 5, 10}, [
-	?CHILD(mod_landlords_client,worker)
-]} }.
+	{ok, {{one_for_one, 5, 10}, [
+		?CHILD(game_center_client_s2c, worker)
+	]}}.
 

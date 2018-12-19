@@ -9,10 +9,12 @@
 -include("protobuf_pb.hrl").
 -define(PROTO_CONFIG, "../../config/protobuf.proto").
 
+-define(CLIENT_PUBLIC_ETS, game_center_client).
+
 -define(TCP_OPTIONS, [
 	binary,
 	{packet, 4},
-	{keepalive, true},
+	{keepalive, false},
 	{active, once}]).
 
 -define(HEART_BREAK_TIME, 60000).  %% 心跳
@@ -21,15 +23,42 @@
 -record(state, {
 	uid,
 	nickname,
-	password,
+	passwd,
+	token,
 	phone,
 	version,
 	device,
+	appid,
 	ip,
 	port,
 	socket,
 	status      %% 连接状态
 }).
+
+-define(CONNECT, connect).
+-define(AUTH, auth).
+-define(INCREMENT, increment).
+-define(ONLINE, online).
+
+
+-define(UID_HASH_RANGE, 10000000).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
