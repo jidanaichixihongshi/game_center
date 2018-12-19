@@ -60,8 +60,6 @@ init([Port, ListenNum]) ->
 
 	{ok, {{one_for_one, 5, 10}, [
 		ranch:child_spec(game_center_receiver, ListenNum, ranch_tcp, [{port, Port}], game_center_receiver, []),
-
-
 		?CHILD(mod_system_monitor, worker),
 		?CHILD(mod_reloader, worker)
 	] ++ PoolSpecs}}.

@@ -224,7 +224,7 @@ reply_auth(SockMod, Socket, Uid, Router, Child) ->
 	NewMid = mod_msg:mid_create(Uid),
 	Data = mod_msg:data_create(0, NewMid, Child, <<"">>),
 	Reply = mod_msg:reply_create(?MT_103, ?SIGN2, Router, Data),
-	ProtoReply = mod_proto:packet(Reply),
+	{ok,ProtoReply} = mod_proto:packet(Reply),
 	tcp_send(SockMod, Socket, ProtoReply).
 
 

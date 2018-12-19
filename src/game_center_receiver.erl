@@ -127,7 +127,7 @@ process_msg(#proto{mt = ?MT_101, sig = ?SIGN1, router = Router, ts = MTimestamp}
 			?DEBUG("recv ~p ack ok ... ...~n", [State#receiver_state.socket]),
 			NewRouter = mod_msg:transform_router(Router),
 			AskMsg = mod_msg:reply_create(?MT_101, ?SIGN2, NewRouter, <<"">>),  %% ASK
-			ProtoMsg = mod_proto:packet(AskMsg),
+			{ok, ProtoMsg} = mod_proto:packet(AskMsg),
 			game_center_c2s:tcp_send(Mod, Socket, ProtoMsg),
 			State#receiver_state{last_recv_time = MsTimestamp};
 		_ ->
